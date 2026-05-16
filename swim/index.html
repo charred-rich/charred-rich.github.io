@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SD Lap Swim Finder</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root {
+    --ocean: #0a4f6e;
+    --wave: #1a8fa8;
+    --foam: #e8f7fb;
+    --dark: #0d1f26;
+    --muted: #6b8c96;
+    --open: #0f9d6b;
+    --accent: #f4a535;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--dark); color: var(--foam); min-height: 100vh; }
+
+  header {
+    background: linear-gradient(135deg, var(--ocean) 0%, #062d40 100%);
+    padding: 24px 20px 28px;
+    position: relative;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 28px;
+    background: var(--dark);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .header-inner { max-width: 640px; margin: 0 auto; }
+  h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.6rem; letter-spacing: 2px; color: #fff; line-height: 1; }
+  h1 span { color: var(--accent); }
+  .subtitle { font-size: 0.72rem; color: var(--wave); letter-spacing: 3px; text-transform: uppercase; margin-top: 4px; }
+
+  .controls { max-width: 640px; margin: 0 auto; padding: 20px 16px 8px; }
+  .control-group { background: #132830; border: 1px solid #1e4455; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+  .control-label { font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase; color: var(--wave); margin-bottom: 10px; }
+
+  .time-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .time-input {
+    background: #0d1f26; border: 1px solid #1e4455; border-radius: 8px;
+    padding: 10px 12px; color: var(--foam); font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; outline: none; transition: border-color 0.2s; color-scheme: dark;
+  }
+  .time-input:focus { border-color: var(--wave); }
+  select.time-input {
+    appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b8c96' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px;
+  }
+
+  button { cursor: pointer; font-family: 'DM Sans', sans-serif; border: none; outline: none; }
+  .btn-now {
+    background: transparent; color: var(--muted); padding: 10px 14px;
+    border-radius: 8px; font-size: 0.82rem; border: 1px solid #1e4455; transition: all 0.2s;
+  }
+  .btn-now:hover { border-color: var(--wave); color: var(--foam); }
+
+  .btn-loc {
+    background: var(--wave); color: #fff; padding: 10px 16px; border-radius: 8px;
+    font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: background 0.2s;
+    border: none;
+  }
+  .btn-loc:hover { background: #1fa8c5; }
+  .btn-loc:disabled { background: #1e4455; color: var(--muted); cursor: default; }
+  .loc-status { font-size: 0.78rem; color: var(--muted); padding-top: 8px; }
+  .loc-status.ok { color: #2dd4a0; }
+  .loc-status.err { color: #e87070; }
+  .addr-row { display: flex; gap: 8px; margin-top: 8px; }
+  .addr-input { flex: 1; min-width: 0; }
+
+  .filter-row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .filter-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.82rem; color: var(--foam); user-select: none; white-space: nowrap; }
+  .filter-toggle.dim { opacity: 0.35; pointer-events: none; }
+  .toggle-track {
+    width: 38px; height: 22px; background: #1e4455; border-radius: 11px;
+    position: relative; transition: background 0.2s; flex-shrink: 0;
+  }
+  .toggle-track.on { background: var(--open); }
+  .toggle-track.on.map-on { background: var(--wave); }
+  .toggle-knob {
+    position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+    background: #fff; border-radius: 50%; transition: left 0.2s;
+  }
+  .toggle-track.on .toggle-knob { left: 19px; }
+
+  .results { max-width: 640px; margin: 0 auto; padding: 4px 16px 40px; }
+  .results-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; padding-top: 4px; }
+  .results-count { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 1px; color: var(--accent); }
+  .results-note { font-size: 0.72rem; color: var(--muted); }
+
+  .pool-card {
+    background: #132830; border: 1px solid #1e4455; border-left: 3px solid #1e4455;
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 10px;
+  }
+  .pool-card.is-open { border-left-color: var(--open); }
+  .pool-card.is-soon { border-left-color: var(--accent); }
+
+  .pool-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .pool-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem; letter-spacing: 1px; color: #fff; line-height: 1.1; }
+  .pool-meta { font-size: 0.74rem; color: var(--muted); margin-top: 2px; }
+
+  .open-badge {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+  }
+  .open-badge.open { background: rgba(15,157,107,0.15); color: #2dd4a0; border: 1px solid rgba(15,157,107,0.3); }
+  .open-badge.closed { background: rgba(30,68,85,0.4); color: var(--muted); border: 1px solid #1e4455; }
+  .open-badge.soon { background: rgba(244,165,53,0.15); color: var(--accent); border: 1px solid rgba(244,165,53,0.3); }
+
+  .pool-sessions { margin-bottom: 10px; }
+  .session-pill {
+    display: inline-block; background: #0d1f26; border: 1px solid #1e4455;
+    border-radius: 6px; padding: 3px 8px; margin: 2px 3px 2px 0; font-size: 0.76rem; color: var(--wave);
+  }
+  .session-pill.now { background: rgba(15,157,107,0.15); border-color: rgba(15,157,107,0.3); color: #2dd4a0; }
+  .no-swim { font-size: 0.76rem; color: var(--muted); }
+  .note-tag { font-size: 0.7rem; color: var(--accent); margin-bottom: 6px; }
+
+  .pool-actions { display: flex; gap: 8px; border-top: 1px solid #1e4455; padding-top: 10px; }
+  .action-btn {
+    flex: 1; padding: 9px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    text-decoration: none; background: #0d1f26; border: 1px solid #1e4455; color: var(--foam);
+    transition: background 0.15s;
+  }
+  .action-btn:hover { background: #1e4455; }
+  .action-btn.nav { color: var(--accent); }
+  .action-btn.call { color: #7dd5e8; }
+
+  .section-divider { font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin: 16px 0 8px; }
+
+  /* Map */
+  #mapWrap { max-width: 640px; margin: 0 auto; padding: 4px 16px 20px; display: none; }
+  #mapEl { height: 460px; border-radius: 12px; overflow: hidden; border: 1px solid #1e4455; }
+  .leaflet-popup-content-wrapper { background: #132830; color: var(--foam); border: 1px solid #1e4455; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
+  .leaflet-popup-tip { background: #132830; }
+  .leaflet-popup-content { margin: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; }
+  .leaflet-popup-close-button { color: var(--muted) !important; }
+  .map-popup-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 3px; color: #fff; }
+  .map-popup-status { font-size: 0.75rem; font-weight: 600; margin-bottom: 6px; }
+  .map-popup-status.open { color: #2dd4a0; }
+  .map-popup-status.closed { color: var(--muted); }
+  .map-popup-nav { display: inline-block; font-size: 0.76rem; color: var(--accent); text-decoration: none; }
+  .map-popup-nav:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="subtitle">San Diego Parks &amp; Recreation</div>
+    <h1>LAP <span>SWIM</span> FINDER</h1>
+  </div>
+</header>
+
+<div class="controls">
+
+  <div class="control-group">
+    <div class="control-label">Check Time</div>
+    <div class="time-row">
+      <select class="time-input" id="daySelect">
+        <option value="0">Sunday</option>
+        <option value="1">Monday</option>
+        <option value="2">Tuesday</option>
+        <option value="3">Wednesday</option>
+        <option value="4">Thursday</option>
+        <option value="5">Friday</option>
+        <option value="6">Saturday</option>
+      </select>
+      <input class="time-input" id="timeInput" type="time" />
+      <button class="btn-now" onclick="setNow()">Now</button>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="control-label">Location <span style="font-size:0.65rem;color:var(--muted);letter-spacing:0;text-transform:none;margin-left:4px;">— optional, sorts by distance</span></div>
+    <button class="btn-loc" id="locBtn" onclick="getLocation()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="10" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+      Use My Location
+    </button>
+    <div class="addr-row">
+      <input class="time-input addr-input" id="addrInput" type="text" placeholder="Or enter an address…" />
+      <button class="btn-now" id="addrBtn" onclick="geocodeAddress()">Go</button>
+    </div>
+    <div class="loc-status" id="locStatus">Pools shown A–Z. Use location above to sort by distance.</div>
+  </div>
+
+  <div class="control-group">
+    <div class="filter-row">
+      <label class="filter-toggle" onclick="toggleOpenOnly()">
+        <div class="toggle-track on" id="toggleTrack"><div class="toggle-knob"></div></div>
+        Open only
+      </label>
+      <label class="filter-toggle" id="openingSoonLabel" onclick="toggleOpeningSoon()">
+        <div class="toggle-track" id="openingSoonTrack"><div class="toggle-knob"></div></div>
+        Opening soon
+      </label>
+      <label class="filter-toggle" onclick="toggleMapView()">
+        <div class="toggle-track" id="mapTrack"><div class="toggle-knob"></div></div>
+        Map view
+      </label>
+    </div>
+  </div>
+
+</div>
+
+<div id="mapWrap"><div id="mapEl"></div></div>
+<div class="results" id="results"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+var POOLS = [
+  { name:"Allied Gardens", address:"6707 Glenroy St, San Diego, CA 92120", phone:"(619) 235-1143", lat:32.7806, lng:-117.0780, note:"Limited lanes — call ahead",
+    schedule:{1:[["07:30","12:30"],["13:30","18:00"]],2:[["13:30","19:30"]],3:[["07:30","12:30"],["13:30","18:00"]],4:[["13:30","19:30"]],5:[["07:30","12:30"],["13:30","18:00"]],6:[["13:00","16:00"]],0:[]} },
+  { name:"Carmel Mountain", address:"12159 World Trade Dr, San Diego, CA 92128", phone:"(858) 581-9954", lat:32.9568, lng:-117.0843,
+    schedule:{1:[["07:00","17:00"]],2:[["10:30","18:00"]],3:[["07:00","17:00"]],4:[["10:30","18:00"]],5:[["07:00","17:00"]],6:[["12:00","16:00"]],0:[]} },
+  { name:"Carmel Valley", address:"3777 Townsgate Dr, San Diego, CA 92130", phone:"(858) 552-1621", lat:32.9394, lng:-117.2297,
+    schedule:{1:[["11:30","14:00"],["13:00","16:00"]],2:[["11:30","14:00"],["13:00","16:00"]],3:[["11:30","14:00"],["13:00","16:00"]],4:[["11:30","14:00"],["13:00","16:00"]],5:[],6:[],0:[["14:30","16:00"]]} },
+  { name:"City Heights", address:"4380 Landis St, San Diego, CA 92105", phone:"(619) 641-6126", lat:32.7454, lng:-117.0823,
+    schedule:{1:[["10:30","12:00"],["13:00","17:00"]],2:[["10:30","12:00"],["13:00","17:00"]],3:[["10:30","12:00"],["13:00","17:00"]],4:[["10:30","12:00"],["13:00","17:00"]],5:[["10:30","12:00"],["13:00","17:00"]],6:[],0:[["11:00","15:30"]]} },
+  { name:"Colina Del Sol", address:"4150 54th Pl, San Diego, CA 92105", phone:"(619) 235-1147", lat:32.7555, lng:-117.0631,
+    schedule:{1:[],2:[["11:30","17:00"]],3:[],4:[["11:30","17:00"]],5:[["13:00","17:00"]],6:[["12:00","16:00"]],0:[]} },
+  { name:"Kearny Mesa", address:"3170 Armstrong St, San Diego, CA 92111", phone:"(858) 573-1389", lat:32.8013, lng:-117.1365,
+    schedule:{1:[["14:30","17:00"]],2:[["12:00","14:00"],["15:00","17:00"]],3:[["14:30","17:00"]],4:[["12:00","14:00"],["15:00","17:00"]],5:[],6:[],0:[["12:00","15:00"],["15:30","17:00"]]} },
+  { name:"Memorial", address:"2902 Marcy Ave, San Diego, CA 92113", phone:"(619) 235-1139", lat:32.6967, lng:-117.1232,
+    schedule:{1:[["10:00","16:00"]],2:[["10:00","16:00"]],3:[["10:00","16:00"]],4:[["10:00","16:00"]],5:[["10:00","16:00"]],6:[["12:00","16:00"]],0:[]} },
+  { name:"Ned Baumer", address:"10440 Black Mountain Rd, San Diego, CA 92126", phone:"(858) 538-8083", lat:32.9134, lng:-117.1218,
+    schedule:{1:[["10:45","14:45"]],2:[["12:45","14:45"]],3:[["10:45","14:45"]],4:[["12:45","14:45"]],5:[["10:45","14:45"]],6:[],0:[]} },
+  { name:"Standley", address:"3605 Governor Dr, San Diego, CA 92122", phone:"(619) 605-2170", lat:32.8610, lng:-117.2157,
+    schedule:{1:[["19:00","20:30"]],2:[["07:00","14:00"]],3:[["19:00","20:30"]],4:[["07:00","14:00"]],5:[],6:[],0:[["11:00","16:00"]]} },
+  { name:"Swanson", address:"3585 Governor Dr, San Diego, CA 92122", phone:"(858) 552-1653", lat:32.8608, lng:-117.2160,
+    schedule:{1:[],2:[],3:[["11:00","15:30"]],4:[],5:[["11:00","15:30"]],6:[["11:30","16:00"]],0:[]} },
+  { name:"Tierrasanta", address:"11238 Clairemont Mesa Blvd, San Diego, CA 92124", phone:"(858) 636-4837", lat:32.8294, lng:-117.0877,
+    schedule:{1:[["10:00","15:00"],["18:00","20:00"]],2:[["12:00","15:00"],["16:00","20:00"]],3:[["10:00","15:00"],["18:00","20:00"]],4:[["12:00","15:00"],["16:00","20:00"]],5:[["10:00","15:00"],["18:00","20:00"]],6:[["12:00","16:00"]],0:[]} },
+  { name:"Vista Terrace", address:"301 Athey Ave, San Ysidro, CA 92173", phone:"(619) 424-0469", lat:32.5589, lng:-117.0428,
+    schedule:{1:[["14:00","18:00"]],2:[["14:00","18:00"]],3:[],4:[["14:00","18:00"]],5:[],6:[],0:[["11:30","16:00"]]} }
+];
+
+var userLat = null, userLng = null;
+var openOnly = true, openingSoon = false, mapView = false;
+var leafletMap = null, poolMarkers = [], userMarker = null;
+
+function toMins(t) { var p=t.split(':'); return parseInt(p[0])*60+parseInt(p[1]); }
+function fmt(t) { var p=t.split(':'), h=parseInt(p[0]), m=p[1], ap=h<12?'am':'pm', h12=h===0?12:h>12?h-12:h; return h12+':'+m+ap; }
+function dist(la1,lo1,la2,lo2) {
+  var R=3958.8, r=Math.PI/180, dLa=(la2-la1)*r, dLo=(lo2-lo1)*r;
+  var a=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(la1*r)*Math.cos(la2*r)*Math.sin(dLo/2)*Math.sin(dLo/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function poolStatus(sessions, nowMins) {
+  if (!sessions || !sessions.length) return {open:false, label:'Closed Today', soonMins:null};
+  for (var i=0;i<sessions.length;i++) {
+    var s=sessions[i];
+    if (nowMins>=toMins(s[0])&&nowMins<toMins(s[1])) return {open:true, label:'Open Now', soonMins:null};
+  }
+  var upcoming=sessions.filter(function(s){return toMins(s[0])>nowMins;});
+  if (upcoming.length) {
+    var mins=toMins(upcoming[0][0])-nowMins;
+    return {open:false, label:'Opens '+fmt(upcoming[0][0]), soonMins:mins};
+  }
+  return {open:false, label:'Done Today', soonMins:null};
+}
+
+function setNow() {
+  var n=new Date();
+  document.getElementById('daySelect').value=n.getDay();
+  document.getElementById('timeInput').value=('0'+n.getHours()).slice(-2)+':'+('0'+n.getMinutes()).slice(-2);
+  render();
+}
+
+function toggleOpenOnly() {
+  openOnly=!openOnly;
+  var t=document.getElementById('toggleTrack');
+  if (openOnly) t.classList.add('on'); else t.classList.remove('on');
+  var sl=document.getElementById('openingSoonLabel');
+  if (!openOnly) sl.classList.add('dim'); else sl.classList.remove('dim');
+  render();
+}
+
+function toggleOpeningSoon() {
+  openingSoon=!openingSoon;
+  var t=document.getElementById('openingSoonTrack');
+  if (openingSoon) t.classList.add('on'); else t.classList.remove('on');
+  render();
+}
+
+function toggleMapView() {
+  mapView=!mapView;
+  var t=document.getElementById('mapTrack');
+  if (mapView) { t.classList.add('on'); t.classList.add('map-on'); } else { t.classList.remove('on'); t.classList.remove('map-on'); }
+  document.getElementById('mapWrap').style.display = mapView ? 'block' : 'none';
+  document.getElementById('results').style.display = mapView ? 'none' : 'block';
+  if (mapView) {
+    initMap();
+    setTimeout(function(){ leafletMap.invalidateSize(); render(); }, 0);
+  } else {
+    render();
+  }
+}
+
+function initMap() {
+  if (leafletMap) return;
+  leafletMap = L.map('mapEl').setView([32.78, -117.12], 11);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 20
+  }).addTo(leafletMap);
+}
+
+function updateMap(pools) {
+  if (!leafletMap) return;
+
+  poolMarkers.forEach(function(m){ leafletMap.removeLayer(m); });
+  poolMarkers = [];
+
+  if (userMarker) { leafletMap.removeLayer(userMarker); userMarker = null; }
+  if (userLat !== null) {
+    userMarker = L.circleMarker([userLat, userLng], {
+      radius: 10, fillColor: '#3b9fe8', color: '#fff', weight: 2.5, fillOpacity: 1
+    }).addTo(leafletMap).bindPopup('<div class="map-popup-name" style="font-size:0.95rem;">You are here</div>');
+  }
+
+  var bounds = userLat !== null ? [[userLat, userLng]] : [];
+
+  pools.forEach(function(p) {
+    var color = p.status.open ? '#2dd4a0' : '#e87070';
+    var statusClass = p.status.open ? 'open' : 'closed';
+    var mapsUrl = 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(p.address);
+    var popup = '<div class="map-popup-name">'+p.name+'</div>'+
+      '<div class="map-popup-status '+statusClass+'">'+p.status.label+'</div>'+
+      '<a class="map-popup-nav" href="'+mapsUrl+'" target="_blank">Navigate &rarr;</a>';
+    var m = L.circleMarker([p.lat, p.lng], {
+      radius: 8, fillColor: color, color: '#0d1f26', weight: 2, fillOpacity: 0.9
+    }).addTo(leafletMap).bindPopup(popup);
+    poolMarkers.push(m);
+    bounds.push([p.lat, p.lng]);
+  });
+
+  if (bounds.length > 1) {
+    leafletMap.fitBounds(bounds, {padding: [28, 28]});
+  } else if (bounds.length === 1) {
+    leafletMap.setView(bounds[0], 12);
+  }
+}
+
+function geocodeAddress() {
+  var q=document.getElementById('addrInput').value.trim();
+  if (!q) return;
+  var btn=document.getElementById('addrBtn'), st=document.getElementById('locStatus');
+  btn.disabled=true; btn.textContent='…';
+  st.className='loc-status'; st.textContent='Searching…';
+  fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q='+encodeURIComponent(q))
+    .then(function(r){ return r.json(); })
+    .then(function(data) {
+      btn.disabled=false; btn.textContent='Go';
+      if (!data.length) {
+        st.className='loc-status err'; st.textContent='Address not found. Try adding a city or zip.';
+        return;
+      }
+      userLat=parseFloat(data[0].lat); userLng=parseFloat(data[0].lon);
+      var label=data[0].display_name.split(',').slice(0,2).join(',');
+      st.className='loc-status ok'; st.textContent='✓ Sorted by distance from '+label;
+      render();
+    })
+    .catch(function() {
+      btn.disabled=false; btn.textContent='Go';
+      st.className='loc-status err'; st.textContent='Geocoding failed. Check your connection.';
+    });
+}
+
+function getLocation() {
+  var btn=document.getElementById('locBtn'), st=document.getElementById('locStatus');
+  if (!navigator.geolocation) { st.className='loc-status err'; st.textContent='Geolocation not available.'; return; }
+  btn.disabled=true; btn.textContent='Getting location…';
+  st.className='loc-status'; st.textContent='Requesting…';
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      userLat=pos.coords.latitude; userLng=pos.coords.longitude;
+      btn.disabled=false; btn.textContent='Update Location';
+      st.className='loc-status ok'; st.textContent='✓ Sorted by distance from your location';
+      render();
+    },
+    function(err) {
+      btn.disabled=false; btn.textContent='Use My Location';
+      st.className='loc-status err';
+      st.textContent=err.code===1?'Location permission denied. Check your browser/app settings.':'Could not get location. Try again.';
+    },
+    {timeout:12000,enableHighAccuracy:false}
+  );
+}
+
+function render() {
+  var day=parseInt(document.getElementById('daySelect').value);
+  var tv=document.getElementById('timeInput').value||'12:00';
+  var nowMins=toMins(tv);
+  var dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  var pools=POOLS.map(function(p) {
+    var sessions=p.schedule[day]||[];
+    var d=userLat!==null?dist(userLat,userLng,p.lat,p.lng):null;
+    var status=poolStatus(sessions,nowMins);
+    var isSoon=!status.open&&status.soonMins!==null&&status.soonMins<=30;
+    return Object.assign({},p,{sessions:sessions,dist:d,status:status,isSoon:isSoon});
+  });
+
+  if (userLat!==null) pools.sort(function(a,b){return a.dist-b.dist;});
+  else pools.sort(function(a,b){return a.name.localeCompare(b.name);});
+
+  if (mapView) {
+    updateMap(pools);
+    return;
+  }
+
+  var openCount=pools.filter(function(p){return p.status.open;}).length;
+
+  var show;
+  if (openOnly) {
+    show=pools.filter(function(p){ return p.status.open||(openingSoon&&p.isSoon); });
+  } else {
+    show=pools;
+  }
+
+  var openList=show.filter(function(p){return p.status.open;});
+  var soonList=show.filter(function(p){return !p.status.open&&p.isSoon;});
+  var closedList=show.filter(function(p){return !p.status.open&&!p.isSoon;});
+
+  var html='<div class="results-header"><span class="results-count">'+openCount+' OPEN NOW</span><span class="results-note">'+dayNames[day]+' &middot; '+fmt(tv)+'</span></div>';
+
+  if (!show.length) {
+    html+='<div style="text-align:center;padding:32px;color:var(--muted);font-size:0.85rem;">No pools open at this time.</div>';
+  } else {
+    openList.forEach(function(p){html+=card(p,nowMins);});
+    if (soonList.length) {
+      html+='<div class="section-divider">Opening within 30 minutes</div>';
+      soonList.forEach(function(p){html+=card(p,nowMins);});
+    }
+    if (closedList.length) {
+      if (openList.length||soonList.length) html+='<div class="section-divider">Not open at this time</div>';
+      closedList.forEach(function(p){html+=card(p,nowMins);});
+    }
+  }
+  document.getElementById('results').innerHTML=html;
+}
+
+function card(p, nowMins) {
+  var distStr='';
+  if (p.dist!==null) distStr=p.dist<1?(Math.round(p.dist*10)/10)+' mi':p.dist.toFixed(1)+' mi';
+  var meta=[p.address.split(',')[0],distStr].filter(Boolean).join(' &middot; ');
+  var mapsUrl='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(p.address);
+  var callUrl='tel:'+p.phone.replace(/\D/g,'');
+  var pills='';
+  if (p.sessions.length) {
+    for (var i=0;i<p.sessions.length;i++) {
+      var s=p.sessions[i], active=nowMins>=toMins(s[0])&&nowMins<toMins(s[1]);
+      pills+='<span class="session-pill'+(active?' now':'')+'">'+fmt(s[0])+'&ndash;'+fmt(s[1])+'</span>';
+    }
+  } else { pills='<span class="no-swim">No lap swim today</span>'; }
+  var note=p.note?'<div class="note-tag">&#9888; '+p.note+'</div>':'';
+  var badgeClass=p.status.open?'open':p.isSoon?'soon':'closed';
+  var badgeLabel=p.isSoon?'Opens in '+p.status.soonMins+'m':p.status.label;
+  var cardClass=p.status.open?' is-open':p.isSoon?' is-soon':'';
+  return '<div class="pool-card'+cardClass+'">'+
+    '<div class="pool-top"><div><div class="pool-name">'+p.name+'</div><div class="pool-meta">'+meta+'</div></div>'+
+    '<span class="open-badge '+badgeClass+'">'+badgeLabel+'</span></div>'+
+    note+'<div class="pool-sessions">'+pills+'</div>'+
+    '<div class="pool-actions">'+
+    '<a class="action-btn nav" href="'+mapsUrl+'" target="_blank">'+
+    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12l19-9-9 19-2-8-8-2z"/></svg>Navigate</a>'+
+    '<a class="action-btn call" href="'+callUrl+'">'+
+    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 1.23 2 2 0 012.11 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>'+
+    p.phone+'</a></div></div>';
+}
+
+document.getElementById('daySelect').addEventListener('change', render);
+document.getElementById('timeInput').addEventListener('change', render);
+document.getElementById('addrInput').addEventListener('keydown', function(e){ if(e.key==='Enter') geocodeAddress(); });
+setNow();
+</script>
+</body>
+</html>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Card — Saturday, May 16</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #f7f4f0;
+  color: #1c1a18;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  padding-bottom: 80px;
+}
+.header {
+  background: #1c1a18;
+  color: #fff;
+  padding: 32px 20px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(to right, #1d4ed8, #3b82f6, #1d4ed8);
+}
+.header .label {
+  font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: #93c5fd; margin-bottom: 10px;
+}
+.header h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(24px, 6vw, 36px);
+  font-weight: 400; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.header .meta { font-size: 13px; color: #aaa; }
+.header .meta a { color: #93c5fd; text-decoration: none; font-weight: 600; }
+.header .meta a:hover { color: #bfdbfe; }
+.comp-bar {
+  background: #1d4ed8;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 14px; font-weight: 600; letter-spacing: 0.3px;
+}
+.comp-bar strong { font-size: 16px; }
+.content { padding: 16px 16px 0; max-width: 680px; margin: 0 auto; }
+
+/* Section headers */
+.section-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: #8a8078;
+  margin: 20px 0 10px;
+}
+
+/* Step blocks */
+.step {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5ddd6;
+  box-shadow: 0 2px 10px rgba(0,0,0,.07);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.step-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid #e5ddd6;
+}
+.step-num {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.step-title-wrap { flex: 1; }
+.step-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: #8a8078; margin-bottom: 3px;
+}
+.step-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px; font-weight: 400; color: #1c1a18;
+}
+.step-badge {
+  font-size: 12px; font-weight: 700;
+  padding: 3px 10px; border-radius: 20px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.step-body { padding: 16px 18px; }
+
+/* Instruction rows */
+.instruction {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 8px 0; border-bottom: 1px solid #f0ece8;
+  font-size: 15px;
+}
+.instruction:last-of-type { border-bottom: none; }
+.inst-icon {
+  font-size: 12px; font-weight: 700; color: #1d4ed8;
+  min-width: 56px; padding-top: 2px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.inst-text { flex: 1; }
+.inst-text em { font-style: italic; color: #6b6560; font-size: 14px; }
+
+/* Pills */
+.pill {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 2px 8px; border-radius: 4px; margin-right: 6px;
+  vertical-align: middle;
+}
+.pill-targets { background: #fef3c7; color: #92400e; }
+.pill-how     { background: #ede9fe; color: #5b21b6; }
+.pill-dose    { background: #dcfce7; color: #166534; }
+.pill-mistake { background: #fee2e2; color: #991b1b; }
+
+/* Focus note */
+.focus-note {
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin-top: 12px;
+  font-size: 14px;
+  border-left: 4px solid;
+}
+
+/* Video chips */
+.vid-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #e5ddd6; }
+.vid-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #8a8078; width: 100%; margin-bottom: 2px; }
+.vid-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid #c8c0b8;
+  border-radius: 8px; padding: 8px 12px;
+  font-size: 13px; font-weight: 500;
+  color: #1c1a18; text-decoration: none;
+}
+.vid-chip:hover { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
+.vid-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 6px;
+  background: #ff0000; font-size: 10px; color: #fff; flex-shrink: 0;
+}
+.vc-meta { display: flex; flex-direction: column; }
+.vc-title { font-weight: 600; font-size: 13px; color: #1c1a18; line-height: 1.3; }
+.vc-sub   { font-size: 11px; color: #8a8078; }
+.vid-chip:hover .vc-title { color: #b91c1c; }
+
+/* Swim finish */
+.finish {
+  background: #166534; color: #fff;
+  border-radius: 12px; padding: 20px;
+  margin-bottom: 16px; text-align: center;
+}
+.finish h3 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin-bottom: 6px; }
+.finish p  { font-size: 14px; color: #bbf7d0; }
+
+/* Swim divider */
+.swim-divider {
+  background: #0369a1;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 13px; font-weight: 700; letter-spacing: 1px;
+  display: flex; align-items: center; gap: 10px;
+  margin: 8px -16px 0;
+}
+
+/* Copy to Joplin button */
+.joplin-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #1c1a18;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  font-size: 14px;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  cursor: pointer;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.joplin-btn:hover { background: #2d2b28; }
+
+/* Swim Today toggle button */
+.swim-btn {
+  background: #0369a1;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-weight: 600;
+  font-size: 15px;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.swim-btn:hover { background: #075985; }
+
+@media(max-width: 480px) {
+  .vid-chip { width: 100%; }
+  .step-badge { display: none; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="label">CJ's Daily Program</div>
+  <h1>Saturday</h1>
+  <div class="meta">May 16, 2026 &nbsp;&middot;&nbsp; <a href="../prs.html">PRs &rarr;</a></div>
+</div>
+
+<div class="comp-bar">
+  <strong>11 days</strong> until the Masters International
+</div>
+
+<div class="content">
+
+  <div class="step">
+    <div class="step-header" style="border-left:4px solid #92400e;background:#fef3c7;border-bottom:none;">
+      <div class="step-title-wrap">
+        <div class="step-title">Kenny's Kung Fu Feet</div>
+      </div>
+      <span class="step-badge" style="background:#fef3c7;color:#92400e;border:1px solid #d97706;">⚠️ reminder</span>
+    </div>
+  </div>
+
+  <div class="section-label">Morning EMOM</div>
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num" style="background:#0f766e;">7</div>
+      <div class="step-title-wrap">
+        <div class="step-label">70 total pull-ups today</div>
+        <div class="step-title">Pull-ups EMOM for 10 min</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Overhead Squat</div>
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num" style="background:#475569;">5</div>
+      <div class="step-title-wrap">
+        <div class="step-title">reps Double 20 lb Kettlebells</div>
+      </div>
+    </div>
+  </div>
+<div class="section-label">Shoulder Prehab</div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-title-wrap">
+        <div class="step-title">Scapular Wall Slides</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="instruction">
+        <span class="inst-icon" style="color:#92400e;">Targets</span>
+        <span class="inst-text">Lower trap, serratus anterior</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon" style="color:#5b21b6;">How</span>
+        <span class="inst-text">Stand with back against a wall, heels 6" out. Arms against wall in a W (forearms vertical, elbows at shoulder height). Slide arms up the wall into a Y while keeping arms and back in contact. Squeeze shoulder blades down and back throughout.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon" style="color:#166534;">Dose</span>
+        <span class="inst-text">2 × 12. Slow and controlled.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon" style="color:#991b1b;">Avoid</span>
+        <span class="inst-text">Arching the low back to cheat arms higher. Stop where you can and work the available range.</span>
+      </div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header">
+      <div class="step-title-wrap">
+        <div class="step-title">Prone I-Y-T Hold</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="instruction">
+        <span class="inst-icon" style="color:#92400e;">Targets</span>
+        <span class="inst-text">Full posterior shoulder chain</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon" style="color:#5b21b6;">How</span>
+        <span class="inst-text">Lie face-down, arms hanging. Lift both arms into an I (straight overhead), hold 10 sec. Lower, then Y, hold 10 sec. Lower, then T (arms straight to sides), hold 10 sec. That's one round.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon" style="color:#166534;">Dose</span>
+        <span class="inst-text">2 rounds. Bodyweight only.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon" style="color:#991b1b;">Avoid</span>
+        <span class="inst-text">Shrugging the neck up. Chin tucked, shoulder blades held down throughout each hold.</span>
+      </div>
+    </div>
+  </div>
+<div class="section-label">Knee Prehab</div>
+
+  <div class="step">
+    <div class="step-header">
+      <div class="step-title-wrap">
+        <div class="step-title">Patrick Step</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="instruction">
+        <span class="inst-icon" style="color:#92400e;">Targets</span>
+        <span class="inst-text">Hip abductors, lateral knee stability</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon" style="color:#5b21b6;">How</span>
+        <span class="inst-text">Stand sideways to a low step. Step laterally onto the step with the far foot. Let the near hip drop as the near leg reaches toward the floor — like a lateral lunge onto a platform. Press back up. Control every inch of the descent.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon" style="color:#166534;">Dose</span>
+        <span class="inst-text">2 × 10 per side.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon" style="color:#991b1b;">Avoid</span>
+        <span class="inst-text">Letting the standing knee buckle inward. Focus on keeping the knee tracking over the second toe throughout.</span>
+      </div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header">
+      <div class="step-title-wrap">
+        <div class="step-title">Backward Step-Up (Safety Step)</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="instruction">
+        <span class="inst-icon" style="color:#92400e;">Targets</span>
+        <span class="inst-text">Quad, VMO, knee stability</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon" style="color:#5b21b6;">How</span>
+        <span class="inst-text">Stand facing away from a low step (4–8 inches to start). Step one foot back onto the step. Press through that heel to stand up. Lower the free leg slowly back to the floor. Keep the working knee tracking over the toes throughout.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon" style="color:#166534;">Dose</span>
+        <span class="inst-text">2 × 12 per side.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon" style="color:#991b1b;">Avoid</span>
+        <span class="inst-text">Letting the knee cave inward on the press. If it does, lower the step height.</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin:8px 0 20px;">
+    <button id="swim-toggle-btn" class="swim-btn" onclick="toggleSwim()">Swim Today</button>
+  </div>
+
+<div id="swim-section" style="display:none;">
+  <div class="swim-divider">
+    <span>Swim Session &nbsp;&middot;&nbsp; ~1,750 yds / 1,600 m</span>
+  </div>
+  <div style="margin-top:16px;"></div>
+  
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num" style="background:#1d4ed8;">1</div>
+      <div class="step-title-wrap">
+        <div class="step-label">Warmup</div>
+        <div class="step-title">Easy Free + Count Your Strokes</div>
+      </div>
+      <div class="step-badge" style="background:#1c1a18;color:#fff;">300 yds</div>
+    </div>
+    <div class="step-body">
+      
+      <div class="instruction">
+        <span class="inst-icon">Do</span>
+        <span class="inst-text"><strong>4 × 75 easy freestyle.</strong> Swim relaxed — this isn't a fitness set, it's just getting your body in the water.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon">Count</span>
+        <span class="inst-text"><strong>On every length of the 3rd and 4th 75,</strong> count your strokes. One count = one arm entry. Write the number down — this is your baseline for everything that follows.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon">Rest</span>
+        <span class="inst-text">15 seconds between each 75.</span>
+      </div>
+      <div class="focus-note" style="background:#eff6ff;color:#1e3a8a;border-left-color:#1d4ed8;"><strong>Your stroke count matters.</strong> Whatever number you get on lengths 3 and 4 — that's your benchmark. Write it down. Every drill today is trying to make that number go down.</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num" style="background:#b91c1c;">2</div>
+      <div class="step-title-wrap">
+        <div class="step-label">Drill 1 — Watch video first</div>
+        <div class="step-title">Closed-Fist Freestyle</div>
+      </div>
+      <div class="step-badge" style="background:#1c1a18;color:#fff;">200 yds</div>
+    </div>
+    <div class="step-body">
+      
+      <div class="instruction">
+        <span class="inst-icon">Do</span>
+        <span class="inst-text"><strong>4 × 25 closed fists,</strong> 15 sec rest. Ball your hands into tight fists and swim normal freestyle.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon">Then</span>
+        <span class="inst-text"><strong>1 × 100 open-hand freestyle immediately after.</strong> Count your strokes on the last two lengths. <em>Water should feel noticeably heavier in your hands.</em></span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon">Focus</span>
+        <span class="inst-text">Forearm angled down, not just the elbow. Feel the water with your whole arm.</span>
+      </div>
+      
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num" style="background:#166534;">3</div>
+      <div class="step-title-wrap">
+        <div class="step-label">Focus Laps</div>
+        <div class="step-title">Stroke Count Aerobic</div>
+      </div>
+      <div class="step-badge" style="background:#1c1a18;color:#fff;">400 yds</div>
+    </div>
+    <div class="step-body">
+      
+      <div class="instruction">
+        <span class="inst-icon">Do</span>
+        <span class="inst-text"><strong>4 × 100 at easy-moderate pace,</strong> 20 sec rest between each.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon">Rule</span>
+        <span class="inst-text"><strong>Count strokes on every single length.</strong> Your cap = your warmup count. If you go over by 2+ strokes, slow down for the next 100.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon">Goal</span>
+        <span class="inst-text">Not speed — holding the same stroke count across all 16 lengths. <em>This is the whole game for distance swimming.</em></span>
+      </div>
+      <div class="focus-note" style="background:#eff6ff;color:#1e3a8a;border-left-color:#1d4ed8;"><strong>Why this matters:</strong> The closed-fist drill just taught your forearm what it's supposed to feel like. These 400 yards lock that in at full stroke. Count climbs = technique broke down — back off the pace.</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num" style="background:#6d28d9;">4</div>
+      <div class="step-title-wrap">
+        <div class="step-label">Drill 2 — Watch video first</div>
+        <div class="step-title">Wall Pull → Power Pulls</div>
+      </div>
+      <div class="step-badge" style="background:#1c1a18;color:#fff;">250 yds</div>
+    </div>
+    <div class="step-body">
+      
+      <div class="instruction">
+        <span class="inst-icon">Part A</span>
+        <span class="inst-text"><strong>Wall pull — 3 × 10 sec at the wall.</strong> Hands and forearms flat on deck. Press straight down and back. Feel your body rise. Rest 10 sec between each. <em>Teaches your arms what pulling backward actually means.</em></span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon">Part B</span>
+        <span class="inst-text"><strong>4 × 25 power pulls with pull buoy.</strong> Odd lengths: closed fists. Even lengths: open hands. 15 sec rest. Forearm presses straight back, not sweeping.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon">Part C</span>
+        <span class="inst-text"><strong>1 × 100 full freestyle.</strong> Count strokes. Did the number drop vs warmup? Even one fewer stroke per length is a win.</span>
+      </div>
+      
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num" style="background:#0f766e;">5</div>
+      <div class="step-title-wrap">
+        <div class="step-label">Main Set</div>
+        <div class="step-title">Get to 1,600 meters</div>
+      </div>
+      <div class="step-badge" style="background:#1c1a18;color:#fff;">600 yds</div>
+    </div>
+    <div class="step-body">
+      
+      <div class="instruction">
+        <span class="inst-icon">Do</span>
+        <span class="inst-text"><strong>600 yards straight</strong> — or 2 × 300 with 30 sec rest if needed. Easy to moderate pace.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon">Focus</span>
+        <span class="inst-text"><strong>Count strokes on the first and last length of every 100.</strong> Notice if your count creeps up as you fatigue. Don't fight it — just notice it.</span>
+      </div>
+      <div class="instruction">
+        <span class="inst-icon">Pace</span>
+        <span class="inst-text">If you're gasping, slow down. Aerobic base + stroke under fatigue — those are the same thing.</span>
+      </div>
+      <div class="focus-note" style="background:#f0fdf4;color:#14532d;border-left-color:#166534;"><strong>Cooldown built in:</strong> Last 50 of the set — drop to real easy pace and try to match or beat your warmup stroke count. That's your feedback on whether today's drills stuck.</div>
+    </div>
+  </div>
+  <div class="finish">
+    <h3>Done. 1,750 yards / ~1,600 meters.</h3>
+    <p>Log: warmup count &middot; post-drill-1 count &middot; post-drill-2 count &middot; final count.</p>
+  </div>
+</div>
+
+</div>
+
+<script>
+const JOPLIN_DATA = {"date": "16May26", "emom_line": "EMOM — Pull-ups 7 pull-ups × 10 min", "shoulder_exercises": [{"name": "Scapular Wall Slides", "dose": "2 × 12. Slow and controlled."}, {"name": "Prone I-Y-T Hold", "dose": "2 rounds. Bodyweight only."}], "knee_exercises": [{"name": "Patrick Step", "dose": "2 × 10 per side."}, {"name": "Backward Step-Up (Safety Step)", "dose": "2 × 12 per side."}], "swim_steps": [{"num": 1, "title": "Easy Free + Count Your Strokes", "yards": "300 yds"}, {"num": 2, "title": "Closed-Fist Freestyle", "yards": "200 yds"}, {"num": 3, "title": "Stroke Count Aerobic", "yards": "400 yds"}, {"num": 4, "title": "Wall Pull → Power Pulls", "yards": "250 yds"}, {"num": 5, "title": "Get to 1,600 meters", "yards": "600 yds"}]};
+let swimActive = false;
+
+function stripHtml(str) {
+  return (str || '').replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
+}
+
+function toggleSwim() {
+  swimActive = !swimActive;
+  const section = document.getElementById('swim-section');
+  const btn = document.getElementById('swim-toggle-btn');
+  section.style.display = swimActive ? 'block' : 'none';
+  btn.textContent = swimActive ? 'Remove Swim' : 'Swim Today';
+  btn.style.background = swimActive ? '#dc2626' : '#0369a1';
+}
+
+function buildJoplinText(data) {
+  const lines = [];
+  lines.push(data.date);
+  lines.push('');
+  lines.push("Kenny's Kung Fu Feet Exercises");
+  lines.push('');
+  lines.push(stripHtml(data.emom_line));
+  lines.push('OHS — 5 reps double 20 lb KBs');
+  lines.push('');
+  lines.push('SHOULDER PREHAB');
+  for (const ex of data.shoulder_exercises) {
+    lines.push('- ' + stripHtml(ex.name) + ': ' + stripHtml(ex.dose));
+  }
+  lines.push('');
+  lines.push('KNEE PREHAB');
+  for (const ex of data.knee_exercises) {
+    lines.push('- ' + stripHtml(ex.name) + ': ' + stripHtml(ex.dose));
+  }
+  if (swimActive) {
+    lines.push('');
+    lines.push('SWIM SESSION (~1,750 yds)');
+    for (const step of data.swim_steps) {
+      lines.push(step.num + '. ' + stripHtml(step.title) + ' — ' + step.yards);
+    }
+  }
+  lines.push('');
+  lines.push('NOTES:');
+  lines.push('');
+  return lines.join('\n');
+}
+
+async function copyToJoplin() {
+  const text = buildJoplinText(JOPLIN_DATA);
+  const btn = document.getElementById('joplin-btn');
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => { btn.textContent = 'Copy to Joplin'; }, 2000);
+  } catch(e) {
+    btn.textContent = 'Copy failed';
+    setTimeout(() => { btn.textContent = 'Copy to Joplin'; }, 2000);
+    console.error('Clipboard error:', e);
+  }
+}
+
+</script>
+<button class="joplin-btn" id="joplin-btn" onclick="copyToJoplin()">Copy to Joplin</button>
+</body>
+</html>

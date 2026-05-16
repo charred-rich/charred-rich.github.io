@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal Records</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #f7f4f0;
+  color: #1c1a18;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  padding-bottom: 60px;
+}
+.header {
+  background: #1c1a18;
+  color: #fff;
+  padding: 32px 20px 28px;
+  position: relative;
+  overflow: hidden;
+}
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(to right, #b91c1c, #ef4444, #b91c1c);
+}
+.header .label {
+  font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: #fca5a5; margin-bottom: 10px;
+}
+.header h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(24px, 6vw, 36px);
+  font-weight: 400; color: #fff; line-height: 1.2; margin-bottom: 8px;
+}
+.header .meta { font-size: 13px; color: #aaa; }
+.header .meta a { color: #fca5a5; text-decoration: none; font-weight: 600; }
+.content { padding: 16px 16px 0; max-width: 680px; margin: 0 auto; }
+.section-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: #8a8078;
+  margin: 20px 0 10px;
+}
+.card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5ddd6;
+  box-shadow: 0 2px 10px rgba(0,0,0,.07);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.card-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid #e5ddd6;
+}
+.card-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px; font-weight: 400; color: #1c1a18; flex: 1;
+}
+.pr-badge {
+  font-size: 15px; font-weight: 700; color: #b91c1c;
+  background: #fee2e2; padding: 4px 12px; border-radius: 20px;
+}
+.card-body { padding: 0; }
+.pr-row {
+  display: flex; gap: 12px; align-items: center;
+  padding: 10px 18px;
+  border-bottom: 1px solid #f0ece8;
+  font-size: 14px;
+}
+.pr-row:last-child { border-bottom: none; }
+.pr-date { color: #8a8078; min-width: 90px; font-size: 13px; }
+.pr-value { font-weight: 700; font-size: 16px; color: #1c1a18; min-width: 80px; }
+.pr-notes { color: #6b6560; font-style: italic; }
+.pr-crown { font-size: 16px; margin-right: 4px; }
+.empty {
+  background: #fff; border-radius: 12px; border: 1px solid #e5ddd6;
+  padding: 32px; text-align: center; color: #8a8078;
+}
+.empty p { margin-bottom: 8px; }
+.empty code { font-size: 13px; background: #f0ece8; padding: 2px 6px; border-radius: 4px; }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="label">CJ's Fitness</div>
+  <h1>Personal Records</h1>
+  <div class="meta">May 02, 2026 &nbsp;&middot;&nbsp; <a href="daily_card.html">&larr; Daily Card</a></div>
+</div>
+
+<div class="content">
+  <div class="section-label">All lifts</div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Pull-up</div>
+      <span class="pr-badge">15 reps</span>
+    </div>
+    <div class="card-body">
+        <div class="pr-row">
+          <span class="pr-date">2026-05-02</span>
+          <span class="pr-value">&#128081;15 reps</span>
+          <span class="pr-notes">strict</span>
+        </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
