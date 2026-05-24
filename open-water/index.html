@@ -166,7 +166,7 @@
 <div class="controls">
 
   <div class="control-group">
-    <div class="control-label">Check Day &amp; Time</div>
+    <div class="control-label">Check Day</div>
     <div class="time-row">
       <select class="time-input" id="daySelect">
         <option value="0">Sunday</option>
@@ -177,8 +177,6 @@
         <option value="5">Friday</option>
         <option value="6">Saturday</option>
       </select>
-      <input class="time-input" id="timeInput" type="time" />
-      <button class="btn-now" onclick="setNow()">Now</button>
     </div>
   </div>
 
@@ -232,6 +230,25 @@
       </a>
     </div>
   </div>
+
+  <div class="section-divider">Monitoring for Events</div>
+
+  <div class="pool-card">
+    <div class="pool-top">
+      <div>
+        <div class="pool-name">La Jolla Cove Swim Club</div>
+        <div class="pool-meta">La Jolla Cove · LJCSC</div>
+      </div>
+    </div>
+    <div class="note-tag">&#128269; Schedule unverified — check website for current events</div>
+    <div class="pool-sessions"><span class="no-swim">Monthly themed social swims · membership required</span></div>
+    <div class="pool-actions">
+      <a class="action-btn web" href="https://ljcsc.com" target="_blank">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+        Website
+      </a>
+    </div>
+  </div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -280,20 +297,6 @@ var CLUBS = [
     note: "Year-round · Beginner-friendly",
     lat: 32.6822, lng: -117.1686,
     schedule: { 0:[["09:00","10:30"]] }
-  },
-  {
-    name: "La Jolla Cove Swim Club",
-    org: "LJCSC",
-    location: "La Jolla Cove",
-    website: "https://ljcsc.com",
-    directionsUrl: "https://ljcsc.com",
-    cost: "Monthly fee",
-    note: "Monthly themed social swims",
-    lat: 32.8503, lng: -117.2726,
-    schedule: {
-      0:[["08:00","10:00"]], 1:[["08:00","10:00"]], 2:[["08:00","10:00"]],
-      3:[["08:00","10:00"]], 4:[["08:00","10:00"]], 5:[["08:00","10:00"]], 6:[["08:00","10:00"]]
-    }
   },
   {
     name: "Swim Open Waters / Ventura Cove Masters",
@@ -365,13 +368,6 @@ function clubStatus(sessions, nowMins) {
     return {open:false, label:'Starts '+fmt(upcoming[0][0]), soonMins:mins};
   }
   return {open:false, label:'Done for today', soonMins:null};
-}
-
-function setNow() {
-  var n=new Date();
-  document.getElementById('daySelect').value=n.getDay();
-  document.getElementById('timeInput').value=('0'+n.getHours()).slice(-2)+':'+('0'+n.getMinutes()).slice(-2);
-  render();
 }
 
 function toggleOpenOnly() {
@@ -483,8 +479,7 @@ function getLocation() {
 
 function render() {
   var day=parseInt(document.getElementById('daySelect').value);
-  var tv=document.getElementById('timeInput').value||'08:00';
-  var nowMins=toMins(tv);
+  var n=new Date(); var nowMins=n.getHours()*60+n.getMinutes();
   var dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
   var clubs=CLUBS.map(function(c) {
@@ -558,9 +553,9 @@ function card(c, nowMins) {
 }
 
 document.getElementById('daySelect').addEventListener('change', render);
-document.getElementById('timeInput').addEventListener('change', render);
 document.getElementById('addrInput').addEventListener('keydown', function(e){ if(e.key==='Enter') geocodeAddress(); });
-setNow();
+document.getElementById('daySelect').value = new Date().getDay();
+render();
 </script>
 </body>
 </html>
